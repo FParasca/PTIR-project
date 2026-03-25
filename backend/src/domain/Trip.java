@@ -8,6 +8,7 @@ public class Trip {
     private int numClients;
     private float travelledDistance;
     private float price;
+    public Trip() {}
 
     public Trip(String startAddress, String endAddress, String startTime, String endTime, int numClients,
             float travelledDistance, float price) {

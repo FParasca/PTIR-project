@@ -1,6 +1,6 @@
 package enums;
 
 public enum MotorType {
-    ELETRIC,
+    ELECTRIC    ,
     DIESEL
 }

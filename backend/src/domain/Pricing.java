@@ -5,6 +5,8 @@ public class Pricing {
     private float pricePerMinLuxurious;
     private float nightlySurchargePercent;
 
+    public Pricing(){}
+
     public Pricing(float pricePerMinBasic, float pricePerMinLuxurious, float nightlySurchargePercent) {
         this.pricePerMinBasic = pricePerMinBasic;
         this.pricePerMinLuxurious = pricePerMinLuxurious;

@@ -12,6 +12,7 @@ public class Taxi {
     private ComfortLevel comfortLevel;
     private MotorType motorType;
 
+    public Taxi(){}
     public Taxi(String licenseplate, int yearofpursage, String brand, String model, ComfortLevel comfortlevel,
             MotorType motorType) {
         this.licensePlate = licenseplate;

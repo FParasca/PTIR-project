@@ -4,6 +4,8 @@ public class Shift {
     private String shiftStart;
     private String shiftFinish;
 
+    public Shift(){}
+
     public Shift(String shiftStart, String shiftFinish) {
         this.shiftStart = shiftStart;
         this.shiftFinish = shiftFinish;

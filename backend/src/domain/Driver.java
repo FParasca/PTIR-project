@@ -12,6 +12,8 @@ public class Driver {
     private String adress;
     private String password;
 
+    public Driver() {}
+
     public Driver(String name, String nif, Gender gender, String driversLicenseNumber, int birthYear, String adress,
             String password) {
         this.name = name;

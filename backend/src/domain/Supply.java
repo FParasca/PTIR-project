@@ -7,6 +7,7 @@ public class Supply {
     private int cost;
     private float totalKmTaxi;
 
+    public Supply(){}
     public Supply(String timeStart, String timeEnd, int cost, float totalKmTaxi) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;

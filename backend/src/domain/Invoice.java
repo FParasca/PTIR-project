@@ -10,6 +10,8 @@ public class Invoice {
     private String clientNumber;
     private Gender clientGender;
 
+    public Invoice() {}
+    
     public Invoice(long serialNumber, String date, String clientNif, String clientNumber, Gender clientGender) {
         this.serialNumber = serialNumber;
         this.date = date;

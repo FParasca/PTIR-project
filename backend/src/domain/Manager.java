@@ -9,6 +9,7 @@ public class Manager {
     private String password;
     private Gender gender;
 
+    public Manager() {}
     public Manager(String name, String nif, String password) {
         this.name = name;
         this.nif = nif;
