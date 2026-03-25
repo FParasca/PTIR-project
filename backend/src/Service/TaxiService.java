@@ -1,13 +1,14 @@
 package Service;
 
 import domain.Taxi;
+import repository.TaxiRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class TaxiService {
 
-    private List<Taxi> taxis = new ArrayList<>();
+    private final TaxiRepository taxiRepository = new TaxiRepository();
 
     private static final Map<String, List<String>> BRANDS_AND_MODELS = new LinkedHashMap<>();
 
@@ -22,52 +23,53 @@ public class TaxiService {
 
         if (!isValidLicensePlate(taxi.getLicensePlate())) {
             throw new IllegalArgumentException(
-                "Matrícula inválida: não pode ter só dígitos ou só letras."
-            );
+                    "Matrícula inválida: não pode ter só dígitos ou só letras.");
+        }
+
+        // 2) Verificação de matrícula duplicada
+        if (taxiRepository.existsByLicensePlate(taxi.getLicensePlate())) {
+            throw new IllegalArgumentException(
+                    "Já existe um táxi com a matrícula: " + taxi.getLicensePlate());
         }
 
         int currentYear = LocalDateTime.now().getYear();
-        if (taxi.getYearofPursage() > currentYear) {
+        if (taxi.getYearOfPurchase() > currentYear) {
             throw new IllegalArgumentException(
-                "Ano de compra inválido"
-            );
+                    "Ano de compra inválido");
         }
 
         if (taxi.getComfortLevel() == null) {
             throw new IllegalArgumentException(
-                "Nível de conforto inválido"
-            );
+                    "Nível de conforto inválido");
         }
 
-        // Critério f) — Tipo de motor não pode ser nulo
         if (taxi.getMotorType() == null) {
             throw new IllegalArgumentException(
-                "Tipo de motor inválido"
-            );
+                    "Tipo de motor inválido");
         }
 
-        // Critério c) — Marca e modelo devem ser das listas predefinidas
         if (!BRANDS_AND_MODELS.containsKey(taxi.getBrand())) {
             throw new IllegalArgumentException(
-                "Marca inválida"
-            );
+                    "Marca inválida");
         }
         if (!BRANDS_AND_MODELS.get(taxi.getBrand()).contains(taxi.getModel())) {
             throw new IllegalArgumentException(
-                "Modelo inválido para a marca"
-                + BRANDS_AND_MODELS.get(taxi.getBrand()) + "."
-            );
+                    "Modelo inválido para a marca"
+                            + BRANDS_AND_MODELS.get(taxi.getBrand()) + ".");
         }
 
         taxi.setCreatedAt(LocalDateTime.now());
-        taxis.add(taxi);
+        // 3) Guardar via repositório em vez de taxis.add()
+        taxiRepository.save(taxi);
     }
 
     private boolean isValidLicensePlate(String plate) {
-        if (plate == null || plate.isBlank()) return false;
+        if (plate == null || plate.isBlank()) {
+            return false;
+        }
 
         boolean hasLetter = plate.chars().anyMatch(Character::isLetter);
-        boolean hasDigit  = plate.chars().anyMatch(Character::isDigit);
+        boolean hasDigit = plate.chars().anyMatch(Character::isDigit);
 
         return hasLetter && hasDigit;
     }
@@ -84,8 +86,6 @@ public class TaxiService {
     }
 
     public List<Taxi> getTaxisSortedByCreationDate() {
-        List<Taxi> sorted = new ArrayList<>(taxis);
-        sorted.sort(Comparator.comparing(Taxi::getCreatedAt).reversed());
-        return sorted;
+        return taxiRepository.findAllSortedByCreationDate();
     }
 }
