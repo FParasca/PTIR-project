@@ -1,9 +1,14 @@
 package Service;
 
-import domain.Taxi;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import domain.Taxi;
 
 public class TaxiService {
 
@@ -27,7 +32,7 @@ public class TaxiService {
         }
 
         int currentYear = LocalDateTime.now().getYear();
-        if (taxi.getYearofPursage() > currentYear) {
+        if (taxi.getYearOfPurchase()> currentYear) {
             throw new IllegalArgumentException(
                 "Ano de compra inválido"
             );
