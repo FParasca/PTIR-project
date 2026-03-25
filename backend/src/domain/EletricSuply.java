@@ -7,6 +7,7 @@ public class EletricSuply extends Supply {
     public EletricSuply() {
         super();
     }
+    
     public EletricSuply(float KWH, String timeStart, String timeEnd, int cost, float totalKmTaxi) {
         super(timeStart, timeEnd, cost, totalKmTaxi);
         this.KWH = KWH;

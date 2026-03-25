@@ -3,6 +3,8 @@ package domain;
 import enums.ComfortLevel;
 import enums.MotorType;
 
+import java.time.LocalDateTime;
+
 public class Taxi {
 
     private String licensePlate;
@@ -11,8 +13,10 @@ public class Taxi {
     private String model;
     private ComfortLevel comfortLevel;
     private MotorType motorType;
+    private LocalDateTime createdAt;
 
     public Taxi(){}
+    
     public Taxi(String licenseplate, int yearofpursage, String brand, String model, ComfortLevel comfortlevel,
             MotorType motorType) {
         this.licensePlate = licenseplate;
@@ -21,6 +25,7 @@ public class Taxi {
         this.model = model;
         this.comfortLevel = comfortlevel;
         this.motorType = motorType;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getLicensePlate() {
@@ -69,5 +74,13 @@ public class Taxi {
 
     public void setMotorType(MotorType motorType) {
         this.motorType = motorType;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

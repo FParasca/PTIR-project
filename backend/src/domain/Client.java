@@ -10,6 +10,7 @@ public class Client {
     private String password;
 
     public Client() {}  
+    
     public Client(String name, String NIF, Gender gender, String password) {
         this.name = name;
         this.NIF = NIF;

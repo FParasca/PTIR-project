@@ -12,6 +12,7 @@ public class TaxiRequest {
     private RequestStatus status;
 
     public TaxiRequest() {}
+    
     public TaxiRequest(String startAddress, String endAddress, int numClients, ComfortLevel desiredComfortLevel,
             RequestStatus status) {
         this.startAddress = startAddress;
