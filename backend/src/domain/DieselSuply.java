@@ -5,7 +5,7 @@ public class DieselSuply extends Supply {
     private float liters;
 
     public DieselSuply(){
-        super()
+        super();
     }
     public DieselSuply(float liters, String timeStart, String timeEnd, int cost, float totalKmTaxi) {
         super(timeStart, timeEnd, cost, totalKmTaxi);
