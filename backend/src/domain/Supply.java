@@ -1,50 +1,59 @@
 package domain;
 
-public class Supply {
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-    private String timeStart;
-    private String timeEnd;
-    private int cost;
+@Entity
+@Table(name = "supplies")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "supply_type", discriminatorType = DiscriminatorType.STRING)
+public abstract class Supply {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private LocalDateTime timeStart;
+
+    @Column(nullable = false)
+    private LocalDateTime timeEnd;
+
+    @Column(nullable = false)
+    private float cost;
+
+    @Column(nullable = false)
     private float totalKmTaxi;
 
-    public Supply(){}
-    
-    public Supply(String timeStart, String timeEnd, int cost, float totalKmTaxi) {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "shift_id", nullable = false)
+    private Shift shift;
+
+    public Supply() {}
+
+    public Supply(LocalDateTime timeStart, LocalDateTime timeEnd,
+                  float cost, float totalKmTaxi, Shift shift) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.cost = cost;
         this.totalKmTaxi = totalKmTaxi;
+        this.shift = shift;
     }
 
-    public String getTimeStart() {
-        return timeStart;
-    }
+    public Long getId() { return id; }
 
-    public void setTimeStart(String timeStart) {
-        this.timeStart = timeStart;
-    }
+    public LocalDateTime getTimeStart() { return timeStart; }
+    public void setTimeStart(LocalDateTime timeStart) { this.timeStart = timeStart; }
 
-    public String getTimeEnd() {
-        return timeEnd;
-    }
+    public LocalDateTime getTimeEnd() { return timeEnd; }
+    public void setTimeEnd(LocalDateTime timeEnd) { this.timeEnd = timeEnd; }
 
-    public void setTimeEnd(String timeEnd) {
-        this.timeEnd = timeEnd;
-    }
+    public float getCost() { return cost; }
+    public void setCost(float cost) { this.cost = cost; }
 
-    public int getCost() {
-        return cost;
-    }
+    public float getTotalKmTaxi() { return totalKmTaxi; }
+    public void setTotalKmTaxi(float totalKmTaxi) { this.totalKmTaxi = totalKmTaxi; }
 
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
-    public float getTotalKmTaxi() {
-        return totalKmTaxi;
-    }
-
-    public void setTotalKmTaxi(float totalKmTaxi) {
-        this.totalKmTaxi = totalKmTaxi;
-    }
+    public Shift getShift() { return shift; }
+    public void setShift(Shift shift) { this.shift = shift; }
 }
