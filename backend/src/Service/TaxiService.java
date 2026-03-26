@@ -1,5 +1,7 @@
 package Service;
 
+import Repository.TaxiRepository;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,8 +13,6 @@ import java.util.Map;
 import domain.Taxi;
 
 public class TaxiService {
-
-    private final TaxiRepository taxiRepository = new TaxiRepository();
 
     private static final Map<String, List<String>> BRANDS_AND_MODELS = new LinkedHashMap<>();
 

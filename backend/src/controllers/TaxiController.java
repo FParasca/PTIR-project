@@ -2,6 +2,8 @@ package controllers;
 
 import domain.Taxi;
 import Service.TaxiService;
+import dto_response.TaxiResponse;
+import dto_request.CreateNewTaxiRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +35,11 @@ public class TaxiController {
                 .toList();
     }
 
-    // Critério c) — Listar marcas predefinidas
     @GetMapping("/brands")
     public List<String> brands() {
         return taxiService.getAvailableBrands();
     }
 
-    // Critério c) — Listar modelos por marca
     @GetMapping("/brands/{brand}/models")
     public List<String> models(@PathVariable String brand) {
         return taxiService.getModelsByBrand(brand);
