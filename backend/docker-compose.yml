@@ -1,38 +1,57 @@
 services:
-  pgserver:
-    image: postgres:16-alpine
-    container_name: pgserver
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - dbnet
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgres
-    restart: unless-stopped
 
-  springbootapp:
-    build: .
-    container_name: java_app
-    restart: unless-stopped
-    depends_on:
-      - pgserver
-    networks:
-      - dbnet
+  # ─────────────────────────────────────────
+  # API - PTIR Backend
+  # ─────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ptir-api
     ports:
       - "8081:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://pgserver:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=ptir_db
+      - DB_USER=ptir_user
+      - DB_PASSWORD=ptir_pass
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ptir-network
 
+  # ─────────────────────────────────────────
+  # Base de Dados - PostgreSQL
+  # ─────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: ptir-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=ptir_db
+      - POSTGRES_USER=ptir_user
+      - POSTGRES_PASSWORD=ptir_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ptir_user -d ptir_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ptir-network
+
+# ─────────────────────────────────────────
+# Volumes & Networks
+# ─────────────────────────────────────────
 volumes:
-  postgres-data:
+  pgdata:
 
 networks:
-  dbnet:
+  ptir-network:
     driver: bridge

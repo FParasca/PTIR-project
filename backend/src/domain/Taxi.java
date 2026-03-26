@@ -1,11 +1,21 @@
 package domain;
 
-import enums.ComfortLevel;
-import enums.MotorType;
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import enums.ComfortLevel;
+import enums.MotorType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "taxis")
@@ -77,6 +87,7 @@ public class Taxi {
     public void setMotorType(MotorType motorType) { this.motorType = motorType; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public List<Shift> getShifts() { return shifts; }
     public void setShifts(List<Shift> shifts) { this.shifts = shifts; }

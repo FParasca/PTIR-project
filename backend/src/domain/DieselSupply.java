@@ -10,7 +10,7 @@ import domain.Shift;
 @DiscriminatorValue("DIESEL")
 public class DieselSupply extends Supply {
 
-    // restrição 22 — litros positivos
+    
     @Column(nullable = false)
     private float liters;
 
