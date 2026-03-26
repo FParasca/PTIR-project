@@ -1,12 +1,16 @@
 package Repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import domain.Taxi;
-import java.util.Optional;
 
 @Repository
 public interface TaxiRepository extends JpaRepository<Taxi, Long> {
 
-    Optional<Taxi> findByLicensePlate(String licensePlate);
+    boolean existsByLicensePlate(String licensePlate);
+    
+    List<Taxi> findAllByOrderByCreatedAtDesc();
 }
