@@ -1,10 +1,11 @@
 package domain;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import enums.ComfortLevel;
-import enums.MotorType;
-import domain.Shift;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
 
 @Entity
 @DiscriminatorValue("DIESEL")

@@ -5,14 +5,25 @@ import Repository.TaxiRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import domain.Taxi;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import Repository.TaxiRepository;
+import domain.Taxi;
+import dto_request.CreateTaxiRequest;
+import dto_response.TaxiResponse;
+import enums.ComfortLevel;
+import enums.MotorType;
+
+@Service
 public class TaxiService {
+
+    @Autowired
+    private TaxiRepository taxiRepository;
 
     private static final Map<String, List<String>> BRANDS_AND_MODELS = new LinkedHashMap<>();
 
@@ -23,48 +34,73 @@ public class TaxiService {
         BRANDS_AND_MODELS.put("Tesla", Arrays.asList("Model S", "Model 3", "Model X"));
     }
 
-    public void registerTaxi(Taxi taxi) {
+    public TaxiResponse mapToTaxiResponse(Taxi taxi) {
+        return new TaxiResponse(
+                taxi.getId(),
+                taxi.getLicensePlate(),
+                taxi.getYearOfPurchase(),
+                taxi.getBrand(),
+                taxi.getModel(),
+                taxi.getComfortLevel() != null ? taxi.getComfortLevel().name() : null,
+                taxi.getMotorType() != null ? taxi.getMotorType().name() : null,
+                taxi.getCreatedAt()
+        );
+    }
 
-        if (!isValidLicensePlate(taxi.getLicensePlate())) {
+    public List<TaxiResponse> getAllTaxis() {
+
+        List<Taxi> taxis = taxiRepository.findAllByOrderByCreatedAtDesc(); 
+        return taxis.stream()
+                .map(this::mapToTaxiResponse)
+                .toList();
+    }
+
+    public TaxiResponse createTaxi(CreateTaxiRequest request) {
+
+        if (!isValidLicensePlate(request.getLicensePlate())) {
             throw new IllegalArgumentException(
                     "Matrícula inválida: não pode ter só dígitos ou só letras.");
         }
 
-        // 2) Verificação de matrícula duplicada
-        if (taxiRepository.existsByLicensePlate(taxi.getLicensePlate())) {
+        if (taxiRepository.existsByLicensePlate(request.getLicensePlate())) {
             throw new IllegalArgumentException(
-                    "Já existe um táxi com a matrícula: " + taxi.getLicensePlate());
+                    "Já existe um táxi com a matrícula: " + request.getLicensePlate());
         }
 
         int currentYear = LocalDateTime.now().getYear();
-        if (taxi.getYearOfPurchase()> currentYear) {
-            throw new IllegalArgumentException(
-                    "Ano de compra inválido");
+        if (request.getYearOfPurchase() > currentYear) {
+            throw new IllegalArgumentException("Ano de compra inválido");
         }
 
-        if (taxi.getComfortLevel() == null) {
-            throw new IllegalArgumentException(
-                    "Nível de conforto inválido");
+        if (request.getComfortLevel() == null) {
+            throw new IllegalArgumentException("Nível de conforto inválido");
+        }
+        if (request.getMotorType() == null) {
+            throw new IllegalArgumentException("Tipo de motor inválido");
         }
 
-        if (taxi.getMotorType() == null) {
+        if (!BRANDS_AND_MODELS.containsKey(request.getBrand())) {
+            throw new IllegalArgumentException("Marca inválida");
+        }
+        if (!BRANDS_AND_MODELS.get(request.getBrand()).contains(request.getModel())) {
             throw new IllegalArgumentException(
-                    "Tipo de motor inválido");
+                    "Modelo inválido para a marca " + request.getBrand() + ".");
         }
 
-        if (!BRANDS_AND_MODELS.containsKey(taxi.getBrand())) {
-            throw new IllegalArgumentException(
-                    "Marca inválida");
-        }
-        if (!BRANDS_AND_MODELS.get(taxi.getBrand()).contains(taxi.getModel())) {
-            throw new IllegalArgumentException(
-                    "Modelo inválido para a marca"
-                            + BRANDS_AND_MODELS.get(taxi.getBrand()) + ".");
-        }
+        Taxi taxi = new Taxi();
+        taxi.setLicensePlate(request.getLicensePlate());
+        taxi.setBrand(request.getBrand());
+        taxi.setModel(request.getModel());
+        taxi.setYearOfPurchase(request.getYearOfPurchase());
+        
+        taxi.setComfortLevel(ComfortLevel.valueOf(request.getComfortLevel().toUpperCase()));
+        taxi.setMotorType(MotorType.valueOf(request.getMotorType().toUpperCase()));
 
         taxi.setCreatedAt(LocalDateTime.now());
-        // 3) Guardar via repositório em vez de taxis.add()
-        taxiRepository.save(taxi);
+
+        Taxi taxiSaved = taxiRepository.save(taxi);
+
+        return mapToTaxiResponse(taxiSaved);
     }
 
     private boolean isValidLicensePlate(String plate) {
@@ -87,9 +123,5 @@ public class TaxiService {
             throw new IllegalArgumentException("Marca não encontrada");
         }
         return new ArrayList<>(BRANDS_AND_MODELS.get(brand));
-    }
-
-    public List<Taxi> getTaxisSortedByCreationDate() {
-        return taxiRepository.findAllSortedByCreationDate();
     }
 }

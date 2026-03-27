@@ -1,47 +1,62 @@
 package controllers;
 
-import domain.Taxi;
-import Service.TaxiService;
-import dto_response.TaxiResponse;
-import dto_request.CreateNewTaxiRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import Service.TaxiService;
+import dto_request.CreateTaxiRequest;
+import dto_response.TaxiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/api/taxis")
+@RequestMapping("/api/v1/taxis")
+@Tag(name = "Taxi API", description = "Gestão de Táxis")
 public class TaxiController {
 
-    private final TaxiService taxiService;
+    @Autowired
+    private TaxiService taxiService;
 
-    public TaxiController(TaxiService taxiService) {
-        this.taxiService = taxiService;
+    @GetMapping
+    @Operation(summary = "Listar táxis", description = "Retorna a lista de táxis ordenada pela data de criação.")
+    public ResponseEntity<List<TaxiResponse>> getAllTaxis() {
+        List<TaxiResponse> taxis = taxiService.getAllTaxis();
+        return ResponseEntity.ok(taxis);
     }
 
     @PostMapping
-    public ResponseEntity<TaxiResponse> register(@RequestBody CreateNewTaxiRequest req) {
-        Taxi taxi = new Taxi(req.getLicensePlate(), req.getYearOfPurchase(),
-                req.getBrand(), req.getModel(), req.getComfortLevel(), req.getMotorType());
-        taxiService.registerTaxi(taxi);
-        return ResponseEntity.ok(TaxiResponse.from(taxi));
-    }
-
-    @GetMapping
-    public List<TaxiResponse> list() {
-        return taxiService.getTaxisSortedByCreationDate()
-                .stream()
-                .map(TaxiResponse::from)
-                .toList();
+    @Operation(summary = "Registar táxi", description = "Cria um novo táxi validando regras de negócio.")
+    public ResponseEntity<?> createTaxi(@RequestBody CreateTaxiRequest request) {
+        try {
+            TaxiResponse novoTaxi = taxiService.createTaxi(request);
+            return new ResponseEntity<>(novoTaxi, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/brands")
-    public List<String> brands() {
-        return taxiService.getAvailableBrands();
+    @Operation(summary = "Listar marcas", description = "Retorna as marcas de táxis suportadas.")
+    public ResponseEntity<List<String>> getAvailableBrands() {
+        return ResponseEntity.ok(taxiService.getAvailableBrands());
     }
 
     @GetMapping("/brands/{brand}/models")
-    public List<String> models(@PathVariable String brand) {
-        return taxiService.getModelsByBrand(brand);
+    @Operation(summary = "Listar modelos por marca", description = "Retorna os modelos disponíveis para uma determinada marca.")
+    public ResponseEntity<?> getModelsByBrand(@PathVariable String brand) {
+        try {
+            return ResponseEntity.ok(taxiService.getModelsByBrand(brand));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
